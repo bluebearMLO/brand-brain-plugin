@@ -1,5 +1,5 @@
 .DS_Store
 __pycache__/
 *.pyc
-brand-brain/
+/brand-brain/
 *-workspace/
