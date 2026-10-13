@@ -50,9 +50,22 @@ def main(src, out):
             o.append(f'<path d="M{X1+BW},{oy+cy} C{X1+BW+50},{oy+cy} {X2-50},{oy+ly+LH/2} {X2},{oy+ly+LH/2}" '
                      f'stroke="{c}" stroke-width="2" fill="none" opacity=".7"/>')
 
-    o.append(f'<rect x="{X0}" y="{ry-70}" width="{RW}" height="140" rx="4" fill="{root_fill}"/>'
-             f'<text x="{X0+RW/2}" y="{ry-6}" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="{root_text}">{e(d["title"])}</text>'
-             f'<text x="{X0+RW/2}" y="{ry+32}" text-anchor="middle" font-size="17" fill="{root_text}" opacity=".7">{e(d.get("tagline",""))}</text>')
+    # root: wrap the title to fit the box, shrinking the font for long names
+    title = d.get("root_title", d["title"])
+    size = 30
+    while True:
+        chars = int((RW - 40) / (size * 0.52))
+        tlines = textwrap.wrap(title, chars)
+        if len(tlines) <= 2 or size <= 18:
+            break
+        size -= 2
+    tlines = tlines[:3]
+    block = len(tlines) * size * 1.15
+    o.append(f'<rect x="{X0}" y="{ry-80}" width="{RW}" height="160" rx="4" fill="{root_fill}"/>')
+    ty = ry - block / 2 - 4 + size
+    for k, tl in enumerate(tlines):
+        o.append(f'<text x="{X0+RW/2}" y="{ty + k*size*1.15}" text-anchor="middle" font-family="Georgia, serif" font-size="{size}" fill="{root_text}">{e(tl)}</text>')
+    o.append(f'<text x="{X0+RW/2}" y="{ty + len(tlines)*size*1.15 + 10}" text-anchor="middle" font-size="16" fill="{root_text}" opacity=".7">{e(d.get("tagline",""))}</text>')
 
     for b, ys, cy in branches:
         c = b["color"]

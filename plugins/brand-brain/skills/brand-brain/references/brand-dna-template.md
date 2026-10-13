@@ -28,4 +28,6 @@ Source keys: ...
 ### Proof we have (verifiable)
 ### Proof we don't have yet: do not claim
 ## 8. Open decisions
+## 9. Source conflicts
+| Topic | Source A says | Source B says | Status / owner to confirm |
 ```

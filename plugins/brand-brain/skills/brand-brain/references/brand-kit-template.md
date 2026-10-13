@@ -33,6 +33,7 @@ Buttons, links, cards, fields, nav, radius, borders/shadows, spacing scale, grid
 ## 5. Photography and imagery
 Subject, light, materials, palette, framing, people/no people, what to avoid.
 How concept/AI imagery must be labelled.
+Image-generation briefs (2–3 when real photography is thin): aspect ratio, suggested file path, an art-director prose brief ending "no text, no logos, no watermarks".
 
 ## 6. Social kit
 Handles, avatar, covers, templates, caption structure, cadence.

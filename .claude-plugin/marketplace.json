@@ -7,7 +7,7 @@
     {
       "name": "brand-brain",
       "description": "Turns a company's existing files (or an interview) into a Claude Project 'Brand Brain': Brand kit, Voice rules, Brand DNA, setup guide, mind map and PDF.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/brand-brain",
       "category": "productivity"
     }

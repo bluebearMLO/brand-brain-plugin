@@ -32,7 +32,7 @@ Steps 2–4 are this skill's job. Steps 1 and 5 are for the user; the setup guid
 Work out three things, and ask only if they aren't clear from the request:
 - **Target:** a local folder (best), a website URL, uploaded files, or nothing (interview mode).
 - **Brand name.**
-- **Output folder:** default to `<target>/brand-brain/`, or `./brand-brain-<slug>/` if there's no folder. Never write into the user's Desktop root.
+- **Output folder:** suggest `<target>/brand-brain/` (or `./brand-brain-<slug>/` with no folder) and confirm it, because writing into a client's repo can break that repo's own rules (check its `CLAUDE.md`/`AGENTS.md`). Never write into the user's Desktop root.
 
 ### 1. Inventory the sources
 
@@ -45,13 +45,19 @@ Look for brand material and rank it by authority before reading deeply. Useful p
 
 Skip `node_modules`, `.next`, `dist`, `.git`, `.venv` and lock files. With a website target, scrape the home, about, product and blog pages with whatever fetch or scrape tool is available.
 
-Write the ranked list down. It becomes the "Source keys" block at the top of each file, so every claim can be traced.
+Then decide two **authorities** and write them down:
+- **Identity authority**, which decides on logo, colour and type. Use the brand book or deck. With no brand book, use the most deliberate design document (a design-system file, a style guide). As a last resort use the shipped tokens, and say so.
+- **Claims authority**, which decides what may be stated as fact. Use the most formal published document: a capability statement, product spec, `PRODUCT.md` or the plans.
+
+When **shipped code disagrees with the design docs** (a different font loaded, a colour used differently), record both. The docs show what the brand intends and the code shows what is live. Mark the item **owner call** instead of picking one, so all three files treat it the same way.
+
+**Pre-read before delegating.** Skim the key sources yourself first. Extract big PDFs or decks once to text files in a scratch folder and pass those paths on, so each subagent doesn't re-extract them. Note the key facts and any conflicts you've already spotted. The ranked list, the two authorities, the key facts and the known conflicts go into every subagent brief, and the ranked list becomes the "Source keys" block at the top of each file.
 
 ### 2. Build the three files (in parallel if you can)
 
 If an Agent/subagent tool is available, start three subagents in one message, one per file, so they run at the same time. Give each one:
 - the brand name, the project root and the output path;
-- the ranked source list;
+- the ranked source list (with paths to pre-extracted text), the two authorities, key facts and known conflicts;
 - its template from `references/`, which it should read first (`brand-kit-template.md`, `voice-rules-template.md` or `brand-dna-template.md`);
 - the ground rules below, copied word for word.
 
@@ -59,7 +65,9 @@ Without subagents, do the three files one after another yourself.
 
 **Ground rules (put these in every subagent prompt):**
 - Extract; don't invent. Every hex code, font, tagline, number and claim must come from a source. Add a short `Source:` line or `[KEY]` tag to each section.
-- When sources disagree, the brand book or deck wins on identity, and product or plan docs win on what may be claimed. Record every conflict in a "Source conflicts" table rather than silently picking one.
+- When sources disagree, the identity authority wins on look and the claims authority wins on facts. Record every conflict in the file's "Source conflicts" table rather than silently picking one. Code-vs-docs disagreements are **owner call**.
+- Give each rule a status where it's in doubt: **followed** (the existing copy does it), **wish** (stated but not followed), or **owner call** (undecided).
+- Names that must never appear in public (a supplier, a machine brand, a client under NDA) can be named inside the knowledge files, so Claude knows what to avoid. Put them in a clearly headed "Never print" list.
 - Put hex codes and font names in plain text, not only in images, so Claude can reuse them.
 - Proof is only what can be verified. Give "proof we don't have yet / do not claim" its own list: prices, dimensions, client names, reviews, stats or awards that aren't in the sources.
 - Quote real lines verbatim, with their file path, as gold-standard examples.
@@ -91,6 +99,8 @@ Write a `mindmap.json` (schema in `references/mindmap-schema.md`): the brand at 
 python3 <skill-dir>/scripts/mindmap.py <out>/mindmap.json <out>/<Brand>-Brand-Brain-mindmap.svg
 ```
 
+Open or render the SVG and check it: no text should be clipped and no branch should be empty. Keep leaves short and set `root_title` to just the brand name if it's long.
+
 **Miro (optional):** if Miro tools are connected and the user wants a board, build the same tree there. Use `canvas_get_canvas_composer_skill` and then the `free_form` diagramming guidance: a root on the left, branches, leaves on the right, elbowed connectors, and branch colours from the palette. Creating a board is visible to others in the user's Miro team, so confirm before creating it unless they already asked for Miro.
 
 ### 6. PDF
@@ -108,6 +118,10 @@ Keep the reply short:
 - the 6-line Brand DNA, which is the quickest check that you understood the brand;
 - the most important open items and conflicts;
 - the user's next step: create the Claude Project and upload the files.
+
+### Image slots
+
+When the brand has little real photography, add 2–3 image-generation briefs to the Brand kit's imagery section, each with an aspect ratio and a suggested file path. Write them as an art director's brief in plain prose: subject, setting, framing, light, materials, palette from the kit, and mood. End each with "no text, no logos, no watermarks". List them in your final reply so the owner knows what to generate.
 
 ## Notes
 

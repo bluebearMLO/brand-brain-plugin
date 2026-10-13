@@ -30,4 +30,10 @@ What may never be invented or claimed (prices, specs, clients, reviews, medical/
 
 ## 7. Gold-standard lines
 6–10 real lines quoted verbatim with file path. Also list "lines to retire": existing copy that breaks these rules.
+
+## 8. Never print
+Names and phrases that must never appear in public (suppliers, machine brands, NDA clients), with the reason.
+
+## 9. Source conflicts
+| Topic | Source A says | Source B says | Status (followed / wish / owner call) |
 ```

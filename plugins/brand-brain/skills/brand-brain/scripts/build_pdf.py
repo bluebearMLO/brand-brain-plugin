@@ -33,6 +33,36 @@ def inline(t):
 LIST = re.compile(r"^(\s*)(- \[[ x]\] |[-*+] |\d+[.)] )")
 
 
+def parse_list(lines, i):
+    """Parse a (possibly nested, blank-line separated) Markdown list starting at lines[i].
+    Returns (html, next_index). Nesting is by indentation; continuation lines join the item."""
+    base = len(LIST.match(lines[i])[1])
+    tag = "ol" if re.match(r"^\s*\d", lines[i]) else "ul"
+    start = re.match(r"^\s*(\d+)", lines[i])
+    attr = f' start="{start[1]}"' if tag == "ol" and start and start[1] != "1" else ""
+    items = []
+    while i < len(lines):
+        line = lines[i]
+        if not line.strip():
+            # a blank line ends the list unless the list continues right after it
+            if i + 1 < len(lines) and LIST.match(lines[i + 1]) and len(LIST.match(lines[i + 1])[1]) >= base:
+                i += 1; continue
+            break
+        m = LIST.match(line)
+        indent = len(line) - len(line.lstrip())
+        if m and len(m[1]) == base:
+            box = "☐ " if "[ ]" in m[2] else ("☑ " if "[x]" in m[2] else "")
+            items.append([box + inline(line[m.end():]), ""]); i += 1
+        elif m and len(m[1]) > base and items:
+            sub, i = parse_list(lines, i); items[-1][1] += sub
+        elif indent > base and items:
+            items[-1][0] += " " + inline(line.strip()); i += 1
+        else:
+            break
+    body = "".join(f"<li>{t}{sub}</li>" for t, sub in items)
+    return f"<{tag}{attr}>{body}</{tag}>", i
+
+
 def md_to_html(src):
     lines, out, i = src.split("\n"), [], 0
     while i < len(lines):
@@ -56,24 +86,15 @@ def md_to_html(src):
             n = len(m[1]); out.append(f"<h{n}>{inline(m[2])}</h{n}>")
         elif re.match(r"^\s*(-{3,}|\*{3,})\s*$", line):
             out.append("<hr>")
+        elif line.startswith("COVERIMG "):
+            out.append(f'<img class="cover" alt="Mind map" src="{html.escape(line[9:].strip())}">')
         elif line.strip() == "PBREAK":
             out.append('<div class="pb"></div>')
         elif line.startswith(">"):
             out.append("<blockquote>" + inline(line.lstrip("> ")) + "</blockquote>")
         elif LIST.match(line):
-            tag = "ol" if re.match(r"^\s*\d", line) else "ul"
-            items = []
-            while i < len(lines) and (LIST.match(lines[i]) or (lines[i].startswith("  ") and lines[i].strip() and items)):
-                lm = LIST.match(lines[i])
-                if lm:
-                    text = lines[i][lm.end():]
-                    box = "☐ " if "[ ]" in lm[2] else ("☑ " if "[x]" in lm[2] else "")
-                    sub = ' class="sub"' if len(lm[1]) >= 2 else ""
-                    items.append(f"<li{sub}>{box}{inline(text)}</li>")
-                else:
-                    items[-1] = items[-1][:-5] + " " + inline(lines[i].strip()) + "</li>"
-                i += 1
-            out.append(f"<{tag}>" + "".join(items) + f"</{tag}>"); continue
+            html_list, i = parse_list(lines, i)
+            out.append(html_list); continue
         elif line.strip():
             para = [line.strip()]
             while i + 1 < len(lines) and lines[i + 1].strip() and not re.match(r"^(#|\||```|>|\s*([-*+]|\d+[.)]) |-{3,})", lines[i + 1]):
@@ -112,10 +133,10 @@ def main():
     slug = re.sub(r"[^A-Za-z0-9]+", "-", a.title).strip("-")
     out_pdf = os.path.abspath(a.out or os.path.join(d, f"{slug}.pdf"))
 
-    parts = [f"# {a.title}\n\n**{a.tagline}**\n\nBrand kit · Voice rules · Brand DNA, the knowledge files for the {a.title} Claude Project.\n"]
+    parts = [f"# {a.title}\n\n**{a.tagline}**\n\nBrand kit · Voice rules · Brand DNA"]
     mm = sorted(glob.glob(os.path.join(d, "*mindmap*.svg")))
     if mm:
-        parts.append(f"![Mind map]({os.path.basename(mm[0])})\n")
+        parts.append(f"COVERIMG {os.path.basename(mm[0])}\n")
     for pat in ("00-*.md", "01-*.md", "02-*.md", "03-*.md"):
         for f in sorted(glob.glob(os.path.join(d, pat))):
             text = open(f, encoding="utf-8").read()
@@ -139,7 +160,8 @@ def main():
     td {{ border-bottom: 1px solid #ddd; padding: 5px; vertical-align: top; }}
     blockquote {{ background: {a.paper}; margin: 10px 0; padding: 8px 12px; }}
     hr {{ border: none; border-top: 1px solid #ddd; margin: 16px 0; }}
-    li.sub {{ margin-left: 22px; list-style: circle; }}
+    li ul, li ol {{ margin: 2px 0; }}
+    img.cover {{ max-height: 690px; margin-top: 4px; }}
     .pb {{ page-break-after: always; }}
     a {{ color: {a.accent}; }}
     """
@@ -147,6 +169,8 @@ def main():
     tmp_html = os.path.join(d, "._brand-brain-print.html")  # same dir so relative images resolve
     open(tmp_html, "w", encoding="utf-8").write(page)
 
+    if os.path.exists(out_pdf):
+        os.remove(out_pdf)  # never mistake an old PDF for a fresh one
     browser = find_browser()
     if not browser:
         keep = out_pdf[:-4] + ".html"

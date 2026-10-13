@@ -3,6 +3,7 @@
 ```json
 {
   "title": "Acme Brand Brain",
+  "root_title": "Acme",
   "tagline": "Brand line here.",
   "background": "#f2eee7",
   "root_color": "#1c1d1b",
@@ -17,4 +18,4 @@
 }
 ```
 
-Keep leaves under about 110 characters. Branch text colour is picked automatically for contrast.
+`root_title` is optional (it defaults to `title`) and wraps automatically, but a short brand name reads best. Keep leaves under about 110 characters (3 wrapped lines at most). Branch text colour is picked automatically for contrast.
