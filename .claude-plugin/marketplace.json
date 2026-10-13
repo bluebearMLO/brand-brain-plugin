@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "brand-brain",
+  "description": "Build a Brand Brain (brand kit, voice rules, brand DNA) for any company, ready to load into a Claude Project.",
+  "owner": { "name": "bluebearMLO" },
+  "plugins": [
+    {
+      "name": "brand-brain",
+      "description": "Turns a company's existing files (or an interview) into a Claude Project 'Brand Brain': Brand kit, Voice rules, Brand DNA, setup guide, mind map and PDF.",
+      "version": "1.0.0",
+      "source": "./plugins/brand-brain",
+      "category": "productivity"
+    }
+  ]
+}
