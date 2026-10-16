@@ -1,5 +1,7 @@
 # Voice rules template → `02-voice-rules.md`
 
+> Read the system file (`04-the-<slug>-system.md`, or whichever file `brain.json` lists first) before writing this one. Where you disagree with it on what the product is, it wins. Owner corrections in `brain.json` → `corrections` win over every source.
+
 This is the "upload everything you've written, then turn it into voice rules" step. Read real copy (site, emails, newsletters, social, decks) before writing any rule. A rule nobody follows in the existing copy is a wish; label it that way.
 
 ```markdown

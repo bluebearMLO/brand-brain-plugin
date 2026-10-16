@@ -1,7 +1,15 @@
 {
   "name": "brand-brain",
-  "version": "1.1.0",
-  "description": "Build a Brand Brain for any company or project: Brand kit, Voice rules and Brand DNA knowledge files, a Claude Project setup guide, a mind map and a PDF.",
-  "author": { "name": "bluebearMLO" },
-  "keywords": ["brand", "marketing", "brand-voice", "design-system", "claude-projects"]
+  "version": "2.0.0",
+  "description": "Build, update, rebuild or audit a Brand Brain: the system file (what the product is), Brand kit, Voice rules, Brand DNA and knowledge files, an index tied to the business plan and research, a project agent team, a mind map and a PDF.",
+  "author": {
+    "name": "bluebearMLO"
+  },
+  "keywords": [
+    "brand",
+    "marketing",
+    "brand-voice",
+    "design-system",
+    "claude-projects"
+  ]
 }

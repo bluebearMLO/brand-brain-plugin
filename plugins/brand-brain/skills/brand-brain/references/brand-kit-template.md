@@ -1,5 +1,7 @@
 # Brand kit template → `01-brand-kit.md`
 
+> Read the system file (`04-the-<slug>-system.md`, or whichever file `brain.json` lists first) before writing this one. Where you disagree with it on what the product is, it wins. Owner corrections in `brain.json` → `corrections` win over every source.
+
 Fill this structure from the sources. Delete a section only if the brand truly has nothing for it, and say so in one line (`No motion rules defined yet.`). Cite sources per section.
 
 ```markdown
@@ -35,8 +37,11 @@ Subject, light, materials, palette, framing, people/no people, what to avoid.
 How concept/AI imagery must be labelled.
 Image-generation briefs (2–3 when real photography is thin): aspect ratio, suggested file path, an art-director prose brief ending "no text, no logos, no watermarks".
 
-## 6. Social kit
-Handles, avatar, covers, templates, caption structure, cadence.
+## 6. Channel assets (only if the sources contain them)
+Include this section only when the project's own sources hold real channel assets
+(a social kit, templates, handles). Never create it from material in another project
+or from a generic expectation that brands have one. If nothing exists, leave the
+section out; don't write "none yet".
 
 ## 7. Do / Don't
 Two short bullet lists.

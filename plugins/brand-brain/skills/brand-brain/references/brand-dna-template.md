@@ -1,5 +1,7 @@
 # Brand DNA template → `03-brand-dna.md`
 
+> Read the system file (`04-the-<slug>-system.md`, or whichever file `brain.json` lists first) before writing this one. Where you disagree with it on what the product is, it wins. Owner corrections in `brain.json` → `corrections` win over every source.
+
 The six lines come first. They are the quickest test of whether the brand has been understood. Keep each one to a single sentence.
 
 ```markdown

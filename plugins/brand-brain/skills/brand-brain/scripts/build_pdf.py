@@ -5,13 +5,15 @@ Usage:
   python3 build_pdf.py <brand-brain-dir> --title "Acme Brand Brain" [--tagline "..."]
       [--primary "#1c1d1b"] [--accent "#67422b"] [--paper "#f2eee7"] [--out file.pdf]
 
-Order: cover (title, tagline, *mindmap.svg) -> 00-README.md -> 01-*.md -> 02-*.md -> 03-*.md,
-each on a new page. No third-party Python packages needed. If no browser is found, the
+Order: cover (title, tagline, *mindmap.svg) -> 00-README.md -> every NN-*.md file, each on a
+new page. If brain.json exists, its read_order sets the order (files not listed follow in
+number order); otherwise files go in number order. No third-party Python packages needed. If no browser is found, the
 HTML is left next to the PDF path for manual Print -> Save as PDF.
 """
 import argparse
 import glob
 import html
+import json
 import os
 import re
 import shutil
@@ -133,16 +135,29 @@ def main():
     slug = re.sub(r"[^A-Za-z0-9]+", "-", a.title).strip("-")
     out_pdf = os.path.abspath(a.out or os.path.join(d, f"{slug}.pdf"))
 
-    parts = [f"# {a.title}\n\n**{a.tagline}**\n\nBrand kit · Voice rules · Brand DNA"]
+    files = sorted(os.path.basename(f) for f in glob.glob(os.path.join(d, "[0-9][0-9]-*.md")))
+    order = []
+    mpath = os.path.join(d, "brain.json")
+    if os.path.exists(mpath):
+        order = [f for f in json.load(open(mpath, encoding="utf-8")).get("read_order", []) if f in files]
+    rest = [f for f in files if f not in order and f != "00-README.md"]
+    files = (["00-README.md"] if "00-README.md" in files else []) + order + rest
+
+    def label(f):
+        t = open(os.path.join(d, f), encoding="utf-8").readline().lstrip("# ").strip()
+        t = re.sub(r"^.*?(?:Brand Brain\s*)?[—–-]+\s*(?:\d+\s*[—–·-]*\s*)?", "", t) or t
+        return re.split(r"[:(]", t)[0].strip()
+
+    contents = " · ".join(label(f) for f in files if f != "00-README.md")
+    parts = [f"# {a.title}\n\n**{a.tagline}**\n\n{contents}"]
     mm = sorted(glob.glob(os.path.join(d, "*mindmap*.svg")))
     if mm:
         parts.append(f"COVERIMG {os.path.basename(mm[0])}\n")
-    for pat in ("00-*.md", "01-*.md", "02-*.md", "03-*.md"):
-        for f in sorted(glob.glob(os.path.join(d, pat))):
-            text = open(f, encoding="utf-8").read()
-            if pat == "00-*.md":
-                text = re.sub(r"^# ", "## ", text, count=1, flags=re.M)
-            parts.append("PBREAK\n\n" + text)
+    for f in files:
+        text = open(os.path.join(d, f), encoding="utf-8").read()
+        if f == "00-README.md":
+            text = re.sub(r"^# ", "## ", text, count=1, flags=re.M)
+        parts.append("PBREAK\n\n" + text)
     body = md_to_html("\n\n".join(parts))
 
     css = f"""
